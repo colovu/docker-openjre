@@ -9,12 +9,13 @@ ARG apt_source=tencent
 ARG local_url=""
 RUN set -eux; \
 	appVersion=8u262b10; \
-	appName=OpenJDK8U-jre_x64_linux_hotspot_${appVersion}.tar.gz; \
+	appName=OpenJDK8U-jre_x64_linux_${appVersion}.tar.gz; \
+	appKeys="0xCA5F11C6CE22644D42C6AC4492EF8D39DC13168F 0xEAC843EBD3EFDB98CC772FADA5CD6035332FA671"; \
 	[ -n ${local_url} ] && localURL=${local_url}/openjdk; \
 	appUrls="${localURL} \
 		https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u262-b10 \
 		"; \
-	download_pkg unpack ${appName} "${appUrls}";
+	download_pkg unpack ${appName} "${appUrls}" -g "${appKeys}";
 
 # 镜像生成 ========================================================================
 FROM colovu/debian:10
@@ -37,7 +38,7 @@ RUN select_source ${apt_source}
 RUN install_pkg p11-kit ca-certificates
 
 RUN mkdir -p ${JAVA_HOME}
-COPY --from=builder /usr/local/jdk8u262-b10-jre/ ${JAVA_HOME}
+COPY --from=builder /usr/local/openjdk-8u262-b10-jre/ ${JAVA_HOME}
 
 RUN set -eux; \
 # 更新 OpenJDK 绑定的证书
