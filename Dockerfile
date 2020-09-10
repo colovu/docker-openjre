@@ -7,22 +7,20 @@ ARG apt_source=tencent
 
 # 编译镜像时指定用于加速的本地服务器地址
 ARG local_url=""
-
 RUN set -eux; \
-	appVersion=8u252b09; \
-	appName=OpenJDK8U-jre_x64_linux_${appVersion}.tar.gz; \
-	appKeys="0xCA5F11C6CE22644D42C6AC4492EF8D39DC13168F 0xEAC843EBD3EFDB98CC772FADA5CD6035332FA671"; \
-	appUrls=" \
-		${local_url}/openjdk \
-		https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u252-b09 \
+	appVersion=8u262b10; \
+	appName=OpenJDK8U-jre_x64_linux_hotspot_${appVersion}.tar.gz; \
+	[ -n ${local_url} ] && localURL=${local_url}/openjdk; \
+	appUrls="${localURL} \
+		https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u262-b10 \
 		"; \
-	download_pkg unpack ${appName} "${appUrls}" -g "${appKeys}";
+	download_pkg unpack ${appName} "${appUrls}";
 
 # 镜像生成 ========================================================================
 FROM colovu/debian:10
 ARG apt_source=default
 
-ENV JAVA_VERSION=1.8.0-252 \
+ENV JAVA_VERSION=1.8.0-262 \
 	JAVA_HOME=/usr/local/java-1.8-openjdk
 
 ENV JRE_HOME="${JAVA_HOME}/jre" \
@@ -39,7 +37,7 @@ RUN select_source ${apt_source}
 RUN install_pkg p11-kit ca-certificates
 
 RUN mkdir -p ${JAVA_HOME}
-COPY --from=builder /usr/local/openjdk-8u252-b09-jre/ ${JAVA_HOME}
+COPY --from=builder /usr/local/jdk8u262-b10-jre/ ${JAVA_HOME}
 
 RUN set -eux; \
 # 更新 OpenJDK 绑定的证书
