@@ -21,8 +21,8 @@ RUN set -eux; \
 FROM colovu/debian:10
 ARG apt_source=default
 
-ENV JAVA_VERSION=1.8.0-262 \
-	JAVA_HOME=/usr/local/java-1.8-openjdk
+ENV JAVA_VERSION=8u262-b10 \
+	JAVA_HOME=/usr/local/openjdk8
 
 ENV JRE_HOME="${JAVA_HOME}/jre" \
 	CLASSPATH="${JAVA_HOME}/lib:${JAVA_HOME}/jre/lib" \
@@ -31,7 +31,7 @@ ENV JRE_HOME="${JAVA_HOME}/jre" \
 LABEL \
 	"Version"="v${JAVA_VERSION}" \
 	"Description"="Docker image for openJRE v${JAVA_VERSION}." \
-	"Dockerfile"="https://github.com/colovu/docker-openjdk" \
+	"Dockerfile"="https://github.com/colovu/docker-openjre" \
 	"Vendor"="Endial Fang (endial@126.com)"
 
 RUN select_source ${apt_source}
@@ -42,11 +42,12 @@ COPY --from=builder /usr/local/openjdk-8u262-b10-jre/ ${JAVA_HOME}
 
 RUN set -eux; \
 # 更新 OpenJDK 绑定的证书
+# 8-jdk uses "${JAVA_HOME}/jre/lib/security/cacerts" and 
+# 8-jre and 11+ uses "${JAVA_HOME}/lib/security/cacerts" directly (no "jre" directory)
 	{ \
 		echo '#!/usr/bin/env bash'; \
 		echo 'set -Eeuo pipefail'; \
 		echo 'if ! [ -d "${JAVA_HOME}" ]; then echo >&2 "error: missing JAVA_HOME environment variable"; exit 1; fi'; \
-# 8-jdk uses "${JAVA_HOME}/jre/lib/security/cacerts" and 8-jre and 11+ uses "${JAVA_HOME}/lib/security/cacerts" directly (no "jre" directory)
 		echo 'cacertsFile=; for f in "${JAVA_HOME}/lib/security/cacerts" "${JAVA_HOME}/jre/lib/security/cacerts"; do if [ -e "$f" ]; then cacertsFile="$f"; break; fi; done'; \
 		echo 'if [ -z "$cacertsFile" ] || ! [ -f "$cacertsFile" ]; then echo >&2 "error: failed to find cacerts file in ${JAVA_HOME}"; exit 1; fi'; \
 		echo 'trust extract --overwrite --format=java-cacerts --filter=ca-anchors --purpose=server-auth "$cacertsFile"'; \
@@ -56,6 +57,7 @@ RUN set -eux; \
 	\
 	find "${JAVA_HOME}/lib" -name '*.so' -exec dirname '{}' ';' | sort -u > /etc/ld.so.conf.d/docker-openjdk.conf; \
 	ldconfig; \
+	\
 # 解决应用安装jre-headless时错误：update-alternatives: error: error creating symbolic link '/usr/share/man/man
 	mkdir -p /usr/share/man/man1; \
 	\
