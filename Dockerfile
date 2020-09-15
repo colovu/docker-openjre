@@ -12,7 +12,7 @@ RUN set -eux; \
 	appName=OpenJDK8U-jre_x64_linux_${appVersion}.tar.gz; \
 	appKeys="0xCA5F11C6CE22644D42C6AC4492EF8D39DC13168F 0xEAC843EBD3EFDB98CC772FADA5CD6035332FA671"; \
 	[ -n ${local_url} ] && localURL=${local_url}/openjdk; \
-	appUrls="${localURL} \
+	appUrls="${localURL:-} \
 		https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u262-b10 \
 		"; \
 	download_pkg unpack ${appName} "${appUrls}" -g "${appKeys}";
@@ -20,6 +20,7 @@ RUN set -eux; \
 # 镜像生成 ========================================================================
 FROM colovu/debian:10
 ARG apt_source=default
+ARG local_url=""
 
 ENV JAVA_VERSION=8u262-b10 \
 	JAVA_HOME=/usr/local/openjdk8
@@ -40,10 +41,10 @@ RUN install_pkg p11-kit ca-certificates
 RUN mkdir -p ${JAVA_HOME}
 COPY --from=builder /usr/local/openjdk-8u262-b10-jre/ ${JAVA_HOME}
 
-RUN set -eux; \
 # 更新 OpenJDK 绑定的证书
 # 8-jdk uses "${JAVA_HOME}/jre/lib/security/cacerts" and 
 # 8-jre and 11+ uses "${JAVA_HOME}/lib/security/cacerts" directly (no "jre" directory)
+RUN set -eux; \
 	{ \
 		echo '#!/usr/bin/env bash'; \
 		echo 'set -Eeuo pipefail'; \
