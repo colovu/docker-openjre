@@ -52,6 +52,12 @@ RUN set -eux; \
 		"; \
 	download_pkg install ${appName} "${appUrls}"; \
 	apk add --no-cache /usr/local/bin/glibc-2.32-r0.apk; \
+	\
+# 解决 /usr/glibc-compat/sbin/ldconfig: /usr/glibc-compat/lib/ld-linux-x86-64.so.2 is not a symbolic link
+	cd /usr/glibc-compat/lib; \
+	mv ld-linux-x86-64.so.2 ld-linux-x86-64.so; \
+	ln -s ld-linux-x86-64.so ld-linux-x86-64.so.2; \
+	\
 	rm -rf /usr/local/bin/glibc-${appVersion}.apk /tmp/glibc-${appVersion}.apk;
 
 # 安装 Glibc-bin；系统自带的 ldconfig 存在 bug
