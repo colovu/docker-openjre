@@ -36,7 +36,7 @@ LABEL \
 	"Vendor"="Endial Fang (endial@126.com)"
 
 RUN select_source ${apt_source}
-RUN install_pkg p11-kit ca-certificates
+RUN install_pkg p11-kit ca-certificates dmidecode
 
 RUN mkdir -p ${JAVA_HOME}
 COPY --from=builder /usr/local/openjdk-8u262-b10-jre/ ${JAVA_HOME}
