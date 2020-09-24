@@ -27,6 +27,7 @@ ENV JAVA_VERSION=8u262-b10 \
 
 ENV JRE_HOME="${JAVA_HOME}/jre" \
 	CLASSPATH="${JAVA_HOME}/lib:${JAVA_HOME}/jre/lib" \
+	LANG=zh_CN.UTF-8 \
 	PATH="${JAVA_HOME}/bin:${JAVA_HOME}/jre/bin:${PATH}"
 
 LABEL \
