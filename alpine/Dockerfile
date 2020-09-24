@@ -74,6 +74,19 @@ RUN set -eux; \
 	apk add --no-cache /usr/local/bin/glibc-bin-2.32-r0.apk; \
 	rm -rf /usr/local/bin/glibc-bin-${appVersion}.apk /tmp/glibc-bin-${appVersion}.apk;
 
+# 安装 Glibc-i18n；增加中文支持
+RUN set -eux; \
+	wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub; \
+	appVersion=2.32-r0; \
+	appName=glibc-i18n-${appVersion}.apk; \
+	[ -n ${local_url} ] && localURL=${local_url}/glibc; \
+	appUrls="${localURL:-} \
+		https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${appVersion} \
+		"; \
+	download_pkg install ${appName} "${appUrls}"; \
+	apk add --no-cache /usr/local/bin/glibc-i18n-2.32-r0.apk; \
+	rm -rf /usr/local/bin/glibc-i18n-${appVersion}.apk /tmp/glibc-i18n-${appVersion}.apk;
+
 # 更新 OpenJDK 绑定的证书
 # 8-jdk uses "${JAVA_HOME}/jre/lib/security/cacerts" and 
 # 8-jre and 11+ uses "${JAVA_HOME}/lib/security/cacerts" directly (no "jre" directory)
