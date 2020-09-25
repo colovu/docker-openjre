@@ -85,6 +85,7 @@ RUN set -eux; \
 		"; \
 	download_pkg install ${appName} "${appUrls}"; \
 	apk add --no-cache /usr/local/bin/glibc-i18n-2.32-r0.apk; \
+	/usr/glibc-compat/bin/localedef -i zh_CN -f UTF-8 zh_CN.UTF-8; \
 	rm -rf /usr/local/bin/glibc-i18n-${appVersion}.apk /tmp/glibc-i18n-${appVersion}.apk;
 
 # 更新 OpenJDK 绑定的证书
