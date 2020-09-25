@@ -27,7 +27,7 @@ ENV JAVA_VERSION=8u262-b10 \
 
 ENV JRE_HOME="${JAVA_HOME}/jre" \
 	CLASSPATH="${JAVA_HOME}/lib:${JAVA_HOME}/jre/lib" \
-	LANG=zh_CN.UTF-8 \
+	LANG=C.UTF-8 \
 	PATH="${JAVA_HOME}/bin:${JAVA_HOME}/jre/bin:${PATH}"
 
 LABEL \
@@ -85,6 +85,7 @@ RUN set -eux; \
 		"; \
 	download_pkg install ${appName} "${appUrls}"; \
 	apk add --no-cache /usr/local/bin/glibc-i18n-2.32-r0.apk; \
+	/usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8; \
 	/usr/glibc-compat/bin/localedef -i zh_CN -f UTF-8 zh_CN.UTF-8; \
 	rm -rf /usr/local/bin/glibc-i18n-${appVersion}.apk /tmp/glibc-i18n-${appVersion}.apk;
 
