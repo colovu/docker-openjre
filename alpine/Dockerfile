@@ -28,6 +28,9 @@ FROM ${registry_url}/colovu/alpine:3.12
 # sources.list 可使用版本：default / tencent / ustc / aliyun / huawei
 ARG apt_source=aliyun
 
+# 编译镜像时指定用于加速的本地服务器地址
+ARG local_url=""
+
 ENV APP_NAME=openjdk8 \
 	APP_VERSION=8u262-b10
 
@@ -56,7 +59,7 @@ RUN install_pkg p11-kit p11-kit-trust ca-certificates dmidecode
 
 # 安装 Glibc
 RUN set -eux; \
-	curl -sSL -o /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub; \
+	curl -sSL -k -o /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub; \
 	appVersion=2.32-r0; \
 	appName=glibc-${appVersion}.apk; \
 	[ -n ${local_url} ] && localURL=${local_url}/glibc; \
@@ -75,7 +78,7 @@ RUN set -eux; \
 
 # 安装 Glibc-bin；系统自带的 ldconfig 存在 bug
 RUN set -eux; \
-	curl -sSL -o /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub; \
+	curl -sSL -k -o /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub; \
 	appVersion=2.32-r0; \
 	appName=glibc-bin-${appVersion}.apk; \
 	[ -n ${local_url} ] && localURL=${local_url}/glibc; \
@@ -88,7 +91,7 @@ RUN set -eux; \
 
 # 安装 Glibc-i18n；增加中文支持
 RUN set -eux; \
-	curl -sSL -o /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub; \
+	curl -sSL -k -o /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub; \
 	appVersion=2.32-r0; \
 	appName=glibc-i18n-${appVersion}.apk; \
 	[ -n ${local_url} ] && localURL=${local_url}/glibc; \
