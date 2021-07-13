@@ -5,7 +5,7 @@
 
 # 设置当前应用名称及版本
 ARG app_name=openjre
-ARG app_version=8u262b10
+ARG app_version=8u292b10
 
 # 设置默认仓库地址，默认为 阿里云 仓库
 ARG registry_url="registry.cn-shenzhen.aliyuncs.com"
@@ -38,8 +38,7 @@ WORKDIR /tmp
 
 # 下载并解压软件包
 RUN set -eux; \
-	appVersion=8u262b10; \
-	appName=OpenJDK8U-jre_x64_linux_${appVersion}.tar.gz; \
+	appName=OpenJDK8U-jre_x64_linux_${app_version}.tar.gz; \
 	appKeys="0xCA5F11C6CE22644D42C6AC4492EF8D39DC13168F 0xEAC843EBD3EFDB98CC772FADA5CD6035332FA671"; \
 	[ -n ${local_url} ] && localURL=${local_url}/openjdk; \
 	appUrls="${localURL:-} \
@@ -59,7 +58,7 @@ ARG local_url
 
 # 镜像所包含应用的基础信息，定义环境变量，供后续脚本使用
 ENV APP_NAME=openjdk8 \
-	APP_VERSION=8u262-b10
+	APP_VERSION=8u292-b10
 
 # 纯 JRE 版本仅包含 JRE 相关资源
 ENV JAVA_HOME=/usr/local/${APP_NAME} \
@@ -76,7 +75,7 @@ LABEL \
 	"Vendor"="Endial Fang (endial@126.com)"
 
 # 从预处理过程中拷贝软件包(Optional)，可以使用阶段编号或阶段命名定义来源
-COPY --from=builder /tmp/openjdk-8u262-b10-jre ${JAVA_HOME}
+COPY --from=builder /tmp/openjdk-${APP_VERSION}-jre ${JAVA_HOME}
 
 # 选择软件包源(Optional)，以加速后续软件包安装
 RUN select_source ${apt_source}
