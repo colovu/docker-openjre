@@ -12,20 +12,25 @@
 
 **镜像信息：**
 
-- 镜像地址：registry.cn-shenzhen.aliyuncs.com/colovu/openjre:latest
+* 镜像地址：
+  - Aliyun仓库：registry.cn-shenzhen.aliyuncs.com/colovu/openjre
+  - DockerHub：colovu/openjre
+  * 依赖镜像：debian:buster-slim
 
-  
+> 后续相关命令行默认使用`[Docker Hub](https://hub.docker.com)`镜像服务器做说明
 
-## **TL;DR**
+
+
+## TL;DR
 
 基本验证命令：
 
 ```shell
 # 11之前的版本
-$ docker run -it --rm registry.cn-shenzhen.aliyuncs.com/colovu/openjre java -version
+$ docker run -it --rm colovu/openjre java -version
 
 # 11之后的版本
-$ docker run -it --rm registry.cn-shenzhen.aliyuncs.com/colovu/openjre java --version
+$ docker run -it --rm colovu/openjre java --version
 ```
 
 
