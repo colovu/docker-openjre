@@ -5,7 +5,7 @@
 
 # 设置当前应用名称及版本
 ARG app_name=openjre
-ARG app_version=8u292b10
+ARG app_version=8u292
 
 # 设置默认仓库地址，默认为 阿里云 仓库
 ARG registry_url="registry.cn-shenzhen.aliyuncs.com"
@@ -38,11 +38,11 @@ WORKDIR /tmp
 
 # 下载并解压软件包
 RUN set -eux; \
-	appName=OpenJDK8U-jre_x64_linux_${app_version}.tar.gz; \
+	appName=OpenJDK8U-jre_x64_linux_${app_version}b10.tar.gz; \
 	appKeys="0xCA5F11C6CE22644D42C6AC4492EF8D39DC13168F 0xEAC843EBD3EFDB98CC772FADA5CD6035332FA671"; \
 	[ -n ${local_url} ] && localURL=${local_url}/openjdk; \
 	appUrls="${localURL:-} \
-		https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u262-b10 \
+		https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk${app_version}-b10 \
 		"; \
 	download_pkg unpack ${appName} "${appUrls}";
 
@@ -58,7 +58,7 @@ ARG local_url
 
 # 镜像所包含应用的基础信息，定义环境变量，供后续脚本使用
 ENV APP_NAME=openjdk8 \
-	APP_VERSION=8u292-b10
+	APP_VERSION=${app_version}-b10
 
 # 纯 JRE 版本仅包含 JRE 相关资源
 ENV JAVA_HOME=/usr/local/${APP_NAME} \
