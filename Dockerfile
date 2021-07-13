@@ -1,15 +1,40 @@
-# Ver: 1.4 by Endial Fang (endial@126.com)
+# Ver: 1.8 by Endial Fang (endial@126.com)
 #
 
-# 预处理 =========================================================================
-ARG registry_url="registry.cn-shenzhen.aliyuncs.com"
-FROM ${registry_url}/colovu/dbuilder as builder
+# 可变参数 ========================================================================
 
-# sources.list 可使用版本：default / tencent / ustc / aliyun / huawei
+# 设置当前应用名称及版本
+ARG app_name=openjre
+ARG app_version=8u262b10
+
+# 设置默认仓库地址，默认为 阿里云 仓库
+ARG registry_url="registry.cn-shenzhen.aliyuncs.com"
+
+# 设置 apt-get 源：default / tencent / ustc / aliyun / huawei
 ARG apt_source=aliyun
 
 # 编译镜像时指定用于加速的本地服务器地址
 ARG local_url=""
+
+
+# 0. 预处理 ======================================================================
+FROM ${registry_url}/colovu/dbuilder as builder
+
+# 声明需要使用的全局可变参数
+ARG app_name
+ARG app_version
+ARG registry_url
+ARG apt_source
+ARG local_url
+
+# 选择软件包源(Optional)，以加速后续软件包安装
+RUN select_source ${apt_source};
+
+# 安装依赖的软件包及库(Optional)
+#RUN install_pkg xz-utils
+
+# 设置工作目录
+WORKDIR /tmp
 
 # 下载并解压软件包
 RUN set -eux; \
@@ -20,14 +45,19 @@ RUN set -eux; \
 	appUrls="${localURL:-} \
 		https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u262-b10 \
 		"; \
-	download_pkg unpack ${appName} "${appUrls}" -g "${appKeys}";
+	download_pkg unpack ${appName} "${appUrls}";
 
-# 镜像生成 ========================================================================
-FROM ${registry_url}/colovu/debian:10
+# 1. 生成镜像 =====================================================================
+FROM ${registry_url}/colovu/debian:buster
 
-# sources.list 可使用版本：default / tencent / ustc / aliyun / huawei
-ARG apt_source=aliyun
+# 声明需要使用的全局可变参数
+ARG app_name
+ARG app_version
+ARG registry_url
+ARG apt_source
+ARG local_url
 
+# 镜像所包含应用的基础信息，定义环境变量，供后续脚本使用
 ENV APP_NAME=openjdk8 \
 	APP_VERSION=8u262-b10
 
@@ -40,13 +70,13 @@ ENV PATH="${JAVA_HOME}/bin:${PATH}" \
 	LANG=zh_CN.UTF-8
 
 LABEL \
-	"Version"="v${APP_VERSION}" \
-	"Description"="Docker image for openJRE v${APP_VERSION}." \
-	"Dockerfile"="https://github.com/colovu/docker-openjre" \
+	"Version"="v${app_version}" \
+	"Description"="Docker image for ${app_name}(v${app_version})." \
+	"Dockerfile"="https://github.com/colovu/docker-${app_name}" \
 	"Vendor"="Endial Fang (endial@126.com)"
 
 # 从预处理过程中拷贝软件包(Optional)，可以使用阶段编号或阶段命名定义来源
-COPY --from=builder /usr/local/openjdk-8u262-b10-jre ${JAVA_HOME}
+COPY --from=builder /tmp/openjdk-8u262-b10-jre ${JAVA_HOME}
 
 # 选择软件包源(Optional)，以加速后续软件包安装
 RUN select_source ${apt_source}
@@ -79,9 +109,14 @@ RUN set -eux; \
 RUN set -eux; \
 	override_file="/usr/local/overrides/overrides-${APP_VERSION}.sh"; \
 	[ -e "${override_file}" ] && /bin/bash "${override_file}"; \
-	java -version; \
-	gosu --version;
+	java -version;
 
-# 应用程序的服务命令，必须使用非守护进程方式运行。如果使用变量，则该变量必须在运行环境中存在（ENV可以获取）
+# 使用 non-root 用户运行后续的命令
+USER 1001
+
+# 设置工作目录
+WORKDIR /srv/data
+
+# 应用程序的启动命令，必须使用非守护进程方式运行
 CMD []
 
