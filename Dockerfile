@@ -110,11 +110,8 @@ RUN set -eux; \
 	[ -e "${override_file}" ] && /bin/bash "${override_file}"; \
 	java -version;
 
-# 使用 non-root 用户运行后续的命令
-USER 1001
-
 # 设置工作目录
-WORKDIR /srv/data
+WORKDIR /srv
 
 # 应用程序的启动命令，必须使用非守护进程方式运行
 CMD []
