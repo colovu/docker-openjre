@@ -4,9 +4,9 @@
 # 可变参数 ========================================================================
 
 # 设置当前应用名称及版本
-ARG app_name=openjre
-ARG app_version=11.0.8
-ARG app_subver=10
+ARG app_name=openjdk
+ARG app_version=11.0.11
+ARG app_subver=9
 
 # 设置默认仓库地址，默认为 阿里云 仓库
 ARG registry_url="registry.cn-shenzhen.aliyuncs.com"

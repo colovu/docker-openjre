@@ -8,8 +8,8 @@
 
 **JRE 版本信息：**
 
-- 11.0.8_10、latest
-- 8u262
+- 11、latest
+- 8
 
 **镜像信息：**
 
@@ -33,6 +33,14 @@ $ docker run -it --rm colovu/openjre java -version
 # 11之后的版本
 $ docker run -it --rm colovu/openjre java --version
 ```
+
+
+
+## 更新记录
+
+- 2021/7/20: 
+  + 11: 更新应用版本为 11.0.11_9 
+  + 8: 更新应用版本为 8u292b10
 
 
 
